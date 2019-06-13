@@ -1,8 +1,6 @@
-# Ledger terminal
+# Nodex
 
-Idea is to create a terminal which would make adding **ledger-cli** entries easier.
-Imagine a Raspberry PI with a touchscreen and a comfortable user interface for
-appending transactions.
+I want to explore node based UI. For now it will be used for some simple automation tasks.
 
 ![thumb](thumb.jpg)
 
