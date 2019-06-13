@@ -10,6 +10,8 @@ import hxd.res.Font;
 
 import hxd.App;
 
+import Connection;
+
 class Node extends h2d.Object {
   var header_title:h2d.Text;
   public var body:h2d.Interactive;
@@ -18,8 +20,9 @@ class Node extends h2d.Object {
   var offset:{x:Float, y:Float};
   var outline:h2d.filter.Outline;
   var g:h2d.Graphics;
+  var socket001:Socket;
 
-  public function new(title:String, scene:h2d.Scene, font:h2d.Font) {
+  public function new(scene:h2d.Scene, cons:ConsContainer, title:String, font:h2d.Font) {
     super(scene);
     width = 220;
     height = 120;
@@ -43,7 +46,8 @@ class Node extends h2d.Object {
     body.onRelease = clbk_onRelease;
     body.onPush = clbk_onPush;
 
-    var socket001 = new Socket(this, 0, 60);
+    socket001 = new Socket(scene, cons, this, 0, 60);
+    socket001.setGlobalPosition(x, y + 60);
   }
 
   function clbk_onClick(e:hxd.Event):Void {
@@ -67,6 +71,7 @@ class Node extends h2d.Object {
     body.stopDrag();
     outline.color = 0x00AAAAAA;
     body.filter = outline;
+    socket001.setGlobalPosition(x, y);
   }
 }
 
@@ -74,8 +79,12 @@ class Socket extends h2d.Object {
   var body:h2d.Interactive;
   var g:h2d.Graphics;
   var radius:Float;
+  var con:Connection;
+  var cons:ConsContainer;
+  var scene:h2d.Scene;
+  var globalPos:{x:Float, y:Float};
 
-  public function new(parent:h2d.Object, _x:Float, _y:Float) {
+  public function new(_scene:h2d.Scene, _cons:ConsContainer, parent:h2d.Object, _x:Float, _y:Float) {
     super(parent);
     radius = 10;
     body = new h2d.Interactive(radius*2, radius*2, this);
@@ -89,16 +98,47 @@ class Socket extends h2d.Object {
     g.beginFill(0xffdd0b35);
     g.drawCircle(0, 0, radius);
     g.endFill();
-    g = new h2d.Graphics(this);
+
     g.beginFill(0x931c34);
     g.drawCircle(0, 0, radius*2/3);
     g.endFill();
+
+    body.onRelease = clbk_onRelease;
+    body.onPush = clbk_onPush;
+
+    con = new Connection(this);
+    cons = _cons;
+    scene = _scene;
+
+    globalPos = {x:0, y:0};
+  }
+
+  function clbk_onPush(e:hxd.Event):Void {
+    body.startDrag(clbk_startDrag);
+    con.setOrigin(0, 0);
+    con.setDestination(0, 0);
+  }
+
+  // startDrag is used to lock focus on specific Interactive and specific callbacks
+  function clbk_startDrag(e:hxd.Event):Void {
+    con.setDestination(scene.mouseX - x - globalPos.x, scene.mouseY - y - globalPos.y);
+    con.redraw();
+  }
+
+  function clbk_onRelease(e:hxd.Event):Void {
+    body.stopDrag();
+    cons.addConnection(con);
+  }
+
+  public function setGlobalPosition(_x:Float, _y:Float) {
+    globalPos = {x:_x, y:_y};
   }
 }
 
 class Main extends hxd.App
 {
-  public var node001:Node;
+  var node001:Node;
+  var connections:ConsContainer;
 
   override function init() {
     Res.initEmbed();
@@ -110,7 +150,8 @@ class Main extends hxd.App
 
     engine.backgroundColor = 0xFF111111;
 
-    node001 = new Node("Title...", s2d, font12);
+    connections = new ConsContainer();
+    node001 = new Node(s2d, connections, "Title...", font12);
   }
 
   // if we the window has been resized
