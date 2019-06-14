@@ -11,6 +11,7 @@ import hxd.res.Font;
 import hxd.App;
 
 import Connection;
+import Socket;
 
 class Node extends h2d.Object {
   var header_title:h2d.Text;
@@ -22,10 +23,12 @@ class Node extends h2d.Object {
   var g:h2d.Graphics;
   var socket001:Socket;
 
-  public function new(scene:h2d.Scene, cons:ConsContainer, title:String, font:h2d.Font) {
-    super(scene);
+  public function new(inScene:h2d.Scene, inOutCons:ConsContainer, inTitle:String, inFont:h2d.Font, inX:Float, inY:Float) {
+    super(inScene);
     width = 220;
     height = 120;
+    x = inX;
+    y = inY;
 
     body = new h2d.Interactive(width, height, this);
     body.backgroundColor = 0xFF444444;
@@ -36,8 +39,8 @@ class Node extends h2d.Object {
     g.drawRect(0, 12, width, 20);
     g.endFill();
 
-    header_title = new h2d.Text(font, this);
-    header_title.text = title;
+    header_title = new h2d.Text(inFont, this);
+    header_title.text = inTitle;
     header_title.x = 10;
     header_title.y = 12;
     header_title.textColor = 0xFF444444;
@@ -46,7 +49,7 @@ class Node extends h2d.Object {
     body.onRelease = clbk_onRelease;
     body.onPush = clbk_onPush;
 
-    socket001 = new Socket(scene, cons, this, 0, 60);
+    socket001 = new Socket(inScene, inOutCons, this, 0, 60, In);
     socket001.setGlobalPosition(x, y + 60);
   }
 
@@ -75,69 +78,10 @@ class Node extends h2d.Object {
   }
 }
 
-class Socket extends h2d.Object {
-  var body:h2d.Interactive;
-  var g:h2d.Graphics;
-  var radius:Float;
-  var con:Connection;
-  var cons:ConsContainer;
-  var scene:h2d.Scene;
-  var globalPos:{x:Float, y:Float};
-
-  public function new(_scene:h2d.Scene, _cons:ConsContainer, parent:h2d.Object, _x:Float, _y:Float) {
-    super(parent);
-    radius = 10;
-    body = new h2d.Interactive(radius*2, radius*2, this);
-    body.isEllipse = true;
-    body.x = -radius;
-    body.y = -radius;
-    x = _x;
-    y = _y;
-
-    g = new h2d.Graphics(this);
-    g.beginFill(0xffdd0b35);
-    g.drawCircle(0, 0, radius);
-    g.endFill();
-
-    g.beginFill(0x931c34);
-    g.drawCircle(0, 0, radius*2/3);
-    g.endFill();
-
-    body.onRelease = clbk_onRelease;
-    body.onPush = clbk_onPush;
-
-    con = new Connection(this);
-    cons = _cons;
-    scene = _scene;
-
-    globalPos = {x:0, y:0};
-  }
-
-  function clbk_onPush(e:hxd.Event):Void {
-    body.startDrag(clbk_startDrag);
-    con.setOrigin(0, 0);
-    con.setDestination(0, 0);
-  }
-
-  // startDrag is used to lock focus on specific Interactive and specific callbacks
-  function clbk_startDrag(e:hxd.Event):Void {
-    con.setDestination(scene.mouseX - x - globalPos.x, scene.mouseY - y - globalPos.y);
-    con.redraw();
-  }
-
-  function clbk_onRelease(e:hxd.Event):Void {
-    body.stopDrag();
-    cons.addConnection(con);
-  }
-
-  public function setGlobalPosition(_x:Float, _y:Float) {
-    globalPos = {x:_x, y:_y};
-  }
-}
-
 class Main extends hxd.App
 {
   var node001:Node;
+  var node002:Node;
   var connections:ConsContainer;
 
   override function init() {
@@ -150,8 +94,8 @@ class Main extends hxd.App
 
     engine.backgroundColor = 0xFF111111;
 
-    connections = new ConsContainer();
-    node001 = new Node(s2d, connections, "Title...", font12);
+    node001 = new Node(s2d, connections, "Node - 01", font12, 300, 200);
+    node002 = new Node(s2d, connections, "Node - 02", font12, 800, 200);
   }
 
   // if we the window has been resized

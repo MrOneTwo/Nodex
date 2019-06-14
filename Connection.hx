@@ -2,7 +2,7 @@ class ConsContainer {
   var container:Array<Connection>;
 
   public function new() {
-
+    container = new Array<Connection>();
   }
 
   public function addConnection(con:Connection) {
@@ -38,5 +38,11 @@ class Connection extends h2d.Object {
     g.lineStyle(7, 0xffdd0b35, 1.0);
     g.lineTo(source.x, source.y);
     g.lineTo(destination.x, destination.y);
+  }
+
+  public function reset() {
+    setOrigin(0, 0);
+    setDestination(0, 0);
+    g.clear();
   }
 }
