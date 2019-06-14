@@ -12,6 +12,8 @@ import hxd.App;
 
 import Connection;
 import Socket;
+import Context;
+
 
 class Node extends h2d.Object {
   var header_title:h2d.Text;
@@ -23,7 +25,12 @@ class Node extends h2d.Object {
   var g:h2d.Graphics;
   var socket001:Socket;
 
-  public function new(inScene:h2d.Scene, inOutCons:ConsContainer, inTitle:String, inFont:h2d.Font, inX:Float, inY:Float) {
+  public function new(inScene:h2d.Scene,
+                      inOutContext:Context,
+                      inOutCons:ConsContainer,
+                      inTitle:String,
+                      inFont:h2d.Font,
+                      inX:Float, inY:Float) {
     super(inScene);
     width = 220;
     height = 120;
@@ -49,8 +56,10 @@ class Node extends h2d.Object {
     body.onRelease = clbk_onRelease;
     body.onPush = clbk_onPush;
 
-    socket001 = new Socket(inScene, inOutCons, this, 0, 60, In);
+    socket001 = new Socket(inScene, inOutContext, inOutCons, this, 0, 60, In);
+    socket001 = new Socket(inScene, inOutContext, inOutCons, this, width, 60, Out);
     socket001.setGlobalPosition(x, y + 60);
+    socket001.setGlobalPosition(x + width, y + 60);
   }
 
   function clbk_onClick(e:hxd.Event):Void {
@@ -83,6 +92,7 @@ class Main extends hxd.App
   var node001:Node;
   var node002:Node;
   var connections:ConsContainer;
+  var ctx:Context;
 
   override function init() {
     Res.initEmbed();
@@ -94,8 +104,10 @@ class Main extends hxd.App
 
     engine.backgroundColor = 0xFF111111;
 
-    node001 = new Node(s2d, connections, "Node - 01", font12, 300, 200);
-    node002 = new Node(s2d, connections, "Node - 02", font12, 800, 200);
+    ctx = new Context();
+
+    node001 = new Node(s2d, ctx, connections, "Node - 01", font12, 300, 200);
+    node002 = new Node(s2d, ctx, connections, "Node - 02", font12, 800, 200);
   }
 
   // if we the window has been resized
