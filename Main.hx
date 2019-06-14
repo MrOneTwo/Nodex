@@ -24,6 +24,7 @@ class Node extends h2d.Object {
   var outline:h2d.filter.Outline;
   var g:h2d.Graphics;
   var socket001:Socket;
+  var socket002:Socket;
 
   public function new(inScene:h2d.Scene,
                       inOutContext:Context,
@@ -57,9 +58,9 @@ class Node extends h2d.Object {
     body.onPush = clbk_onPush;
 
     socket001 = new Socket(inScene, inOutContext, inOutCons, this, 0, 60, In);
-    socket001 = new Socket(inScene, inOutContext, inOutCons, this, width, 60, Out);
+    socket002 = new Socket(inScene, inOutContext, inOutCons, this, width, 60, Out);
     socket001.setGlobalPosition(x, y + 60);
-    socket001.setGlobalPosition(x + width, y + 60);
+    socket002.setGlobalPosition(x + width, y + 60);
   }
 
   function clbk_onClick(e:hxd.Event):Void {
@@ -83,7 +84,8 @@ class Node extends h2d.Object {
     body.stopDrag();
     outline.color = 0x00AAAAAA;
     body.filter = outline;
-    socket001.setGlobalPosition(x, y);
+    socket001.setGlobalPosition(x, y + 60);
+    socket002.setGlobalPosition(x + width, y + 60);
   }
 }
 

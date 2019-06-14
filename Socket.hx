@@ -90,8 +90,8 @@ class Socket extends h2d.Object {
 
   // startDrag is used to lock focus on specific Interactive and specific callbacks
   function clbk_startDrag(e:hxd.Event):Void {
-    var destX:Float = scene.mouseX - x - globalPos.x;
-    var destY:Float = scene.mouseY - y - globalPos.y;
+    var destX:Float = scene.mouseX - globalPos.x;
+    var destY:Float = scene.mouseY - globalPos.y;
     con.setDestination(destX, destY);
     con.redraw();
   }
