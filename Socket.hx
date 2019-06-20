@@ -90,29 +90,43 @@ class Socket extends h2d.Object {
     }
   }
 
-  // startDrag is used to lock focus on specific Interactive and specific callbacks
+  /*
+    startDrag is used to lock focus on specific Interactive and specific callbacks
+  */
   function clbk_startDrag(e:hxd.Event):Void {
     ctx.setHotConnectionDestination(sceneMain.mouseX, sceneMain.mouseY);
     ctx.drawHotConnection();
   }
 
+  /*
+    Releasing on the socket is used for establishing if connection can be made.
+  */
   function clbk_onRelease(e:hxd.Event):Void {
     body.stopDrag();
-    ctx.resetHotConnection();
-    ctx.setAction(IDLE);
     switch(ctx.getAction()) {
       case IDLE: {
 
       };
       case DRAGGING_CONNECTION_OUT_TO_IN: {
-
+        if (flow == In) {
+          ctx.saveConnection();
+          trace("Saving connection... out to in");
+        }
       };
       case DRAGGING_CONNECTION_IN_TO_OUT: {
-
+        if (flow == Out) {
+          ctx.saveConnection();
+          trace("Saving connection... in to out");
+        }
       };
     }
+    ctx.resetHotConnection();
+    ctx.setAction(IDLE);
   }
 
+  /*
+    This I think is only useful for visual feedback/preview of the connection.
+  */
   function clbk_onOver(e:hxd.Event):Void {
     switch(flow) {
       case In: {

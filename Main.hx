@@ -101,6 +101,7 @@ class Main extends hxd.App
 
     engine.backgroundColor = 0xFF111111;
 
+    connections = new ConsContainer();
     ctx = new Context(s2d, connections);
 
     node001 = new Node(s2d, ctx, connections, "Node - 01", font12, 300, 200);
