@@ -26,39 +26,36 @@ class Node extends h2d.Object {
   var socket001:Socket;
   var socket002:Socket;
 
-  public function new(inScene:h2d.Scene,
-                      inOutContext:Context,
-                      inOutCons:ConsContainer,
-                      inTitle:String,
-                      inFont:h2d.Font,
-                      inX:Float, inY:Float) {
-    super(inScene);
-    width = 220;
-    height = 120;
-    x = inX;
-    y = inY;
+  public function new(scene:h2d.Scene,
+                      context:Context,
+                      connectionsContainer:ConsContainer,
+                      title:String,
+                      font:h2d.Font,
+                      _x:Float, _y:Float) {
+    super(scene);
+    width = 220; height = 120;
+    x = _x; y = _y;
 
     body = new h2d.Interactive(width, height, this);
     body.backgroundColor = 0xFF444444;
-    outline = new h2d.filter.Outline(2.0, 0x00AAAAAA);
+    outline = new h2d.filter.Outline(2.0, 0xFFAAAAAA);
 
     g = new h2d.Graphics(this);
     g.beginFill(0xffdd0b35);
     g.drawRect(0, 12, width, 20);
     g.endFill();
 
-    header_title = new h2d.Text(inFont, this);
-    header_title.text = inTitle;
-    header_title.x = 10;
-    header_title.y = 12;
+    header_title = new h2d.Text(font, this);
+    header_title.text = title;
+    header_title.x = 10; header_title.y = 12;
     header_title.textColor = 0xFF444444;
 
     body.onClick = clbk_onClick;
     body.onRelease = clbk_onRelease;
     body.onPush = clbk_onPush;
 
-    socket001 = new Socket(inScene, inOutContext, inOutCons, this, 0, 60, In);
-    socket002 = new Socket(inScene, inOutContext, inOutCons, this, width, 60, Out);
+    socket001 = new Socket(scene, context, connectionsContainer, this, 0, 60, In);
+    socket002 = new Socket(scene, context, connectionsContainer, this, width, 60, Out);
     socket001.setGlobalPosition(x, y + 60);
     socket002.setGlobalPosition(x + width, y + 60);
   }
@@ -70,7 +67,6 @@ class Node extends h2d.Object {
   function clbk_onPush(e:hxd.Event):Void {
     offset = {x:e.relX, y:e.relY};
     body.startDrag(clbk_startDrag);
-    outline.color = 0xFFAAAAAA;
     body.filter = outline;
   }
 
@@ -82,8 +78,7 @@ class Node extends h2d.Object {
 
   function clbk_onRelease(e:hxd.Event):Void {
     body.stopDrag();
-    outline.color = 0x00AAAAAA;
-    body.filter = outline;
+    body.filter = null;
     socket001.setGlobalPosition(x, y + 60);
     socket002.setGlobalPosition(x + width, y + 60);
   }
@@ -106,7 +101,7 @@ class Main extends hxd.App
 
     engine.backgroundColor = 0xFF111111;
 
-    ctx = new Context();
+    ctx = new Context(s2d, connections);
 
     node001 = new Node(s2d, ctx, connections, "Node - 01", font12, 300, 200);
     node002 = new Node(s2d, ctx, connections, "Node - 02", font12, 800, 200);
